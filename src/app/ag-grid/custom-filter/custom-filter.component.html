@@ -1,0 +1,12 @@
+<div class="filterContainer">
+  <div class="inputContainer">
+    <select name="state" [formControl]="filterType" class="input">
+      <option *ngFor="let filter of filterTypes" [value]="filter">
+        {{ filter }}
+      </option>
+    </select>
+  </div>
+  <div class="inputContainer">
+    <input #input [formControl]="filter" placeholder="Filter..." class="input" />
+  </div>
+</div>
