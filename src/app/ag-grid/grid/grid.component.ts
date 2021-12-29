@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component } from '@angular/core';
 import { ColDef } from 'ag-grid-community';
 import { CustomFilterComponent } from '../custom-filter/custom-filter.component';
 
@@ -8,11 +8,6 @@ import { CustomFilterComponent } from '../custom-filter/custom-filter.component'
   styleUrls: ['./grid.component.scss']
 })
 export class GridComponent {
-
-  frameworkComponents = {
-    customFilter: CustomFilterComponent,
-  };
-
   defaultColDef: ColDef = {
     sortable: true,
     filter: true,
