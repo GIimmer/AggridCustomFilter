@@ -10,7 +10,7 @@ export interface CustomFilterModel {
   filter: string;
 }
 
-export enum TableColFilterType {
+export enum FilterType {
   contains = 'Contains',
   notContains = 'Not Contains',
   equals = 'Equals',
@@ -27,8 +27,8 @@ export enum TableColFilterType {
   styleUrls: ['./custom-filter.component.scss'],
 })
 export class CustomFilterComponent implements IFilterAngularComp, OnDestroy {
-  public filterTypes: string[] = Object.values(TableColFilterType);
-  public filterType = new FormControl(TableColFilterType.contains);
+  public filterTypes: string[] = Object.values(FilterType);
+  public filterType = new FormControl(FilterType.contains);
   public filter = new FormControl('');
 
   private params: IFilterParams | undefined;
@@ -43,7 +43,7 @@ export class CustomFilterComponent implements IFilterAngularComp, OnDestroy {
   agInit(params: IFilterParams): void {
     this.params = params;
     this.subs.sink = this.filter.valueChanges.subscribe((filter: string) => this.onChange({ filter }));
-    this.subs.sink = this.filterType.valueChanges.subscribe((type: TableColFilterType) => this.onChange({ type }));
+    this.subs.sink = this.filterType.valueChanges.subscribe((type: FilterType) => this.onChange({ type }));
     this.filterType.setValue(this.filterTypes[0]);
 
     const colId = params.colDef.field as string;
@@ -82,31 +82,31 @@ export class CustomFilterComponent implements IFilterAngularComp, OnDestroy {
     this.filter.setValue(model.filter, { emitEvent: false });
   }
 
-  private getValueTester(type: TableColFilterType, filter: string) {
+  private getValueTester(type: FilterType, filter: string) {
     const filterLowerCase = filter.toString().toLowerCase();
 
     switch (type) {
       // ----- Standard Filters ----- //
-      case TableColFilterType.contains:
+      case FilterType.contains:
         return (value: string) => value.indexOf(filterLowerCase) >= 0;
-      case TableColFilterType.notContains:
+      case FilterType.notContains:
         return (value: string) => value.indexOf(filterLowerCase) === -1;
-      case TableColFilterType.equals:
+      case FilterType.equals:
         return (value: string) => value === filterLowerCase;
-      case TableColFilterType.notEquals:
+      case FilterType.notEquals:
         return (value: string) => value != filterLowerCase;
-      case TableColFilterType.startsWith:
+      case FilterType.startsWith:
         return (value: string) => value.indexOf(filterLowerCase) === 0;
-      case TableColFilterType.endsWith:
+      case FilterType.endsWith:
         return (value: string) => {
           const idx = value.lastIndexOf(filterLowerCase);
           return idx >= 0 && idx === value.length - filterLowerCase.length;
         };
 
       // ----- List Filters ----- //
-      case TableColFilterType.isContainedIn:
+      case FilterType.isContainedIn:
         return this.getListFilter(filter, true);
-      case TableColFilterType.isNotContainedIn:
+      case FilterType.isNotContainedIn:
         return this.getListFilter(filter, false);
 
       // ----- Should Never Happen ----- //
