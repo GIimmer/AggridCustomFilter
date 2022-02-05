@@ -1,7 +1,7 @@
 import { Component, OnDestroy, ViewChild, ViewContainerRef } from '@angular/core';
 import { FormControl } from '@angular/forms';
 import { IFilterAngularComp } from 'ag-grid-angular';
-import { IDoesFilterPassParams, IFilterParams, IAfterGuiAttachedParams } from 'ag-grid-community';
+import { IDoesFilterPassParams, AgPromise, IFilterParams, IAfterGuiAttachedParams } from 'ag-grid-community';
 import { hashmapFromArray } from 'src/app/utils/general.utils';
 import { SubSink } from 'subsink';
 
@@ -17,28 +17,28 @@ export enum FilterType {
   notEquals = 'Not Equals',
   startsWith = 'Starts With',
   endsWith = 'Ends With',
-  isContainedIn = 'Is Contained in',
-  isNotContainedIn = 'Is Not Contained In',
+  isContainedIn = 'Is Contained In',
+  isNotContainedIn = 'Is Not Contained In'
 }
 
 @Component({
   selector: 'app-custom-filter',
   templateUrl: './custom-filter.component.html',
-  styleUrls: ['./custom-filter.component.scss'],
+  styleUrls: ['./custom-filter.component.scss']
 })
 export class CustomFilterComponent implements IFilterAngularComp, OnDestroy {
-  public filterTypes: string[] = Object.values(FilterType);
-  public filterType = new FormControl(FilterType.contains);
-  public filter = new FormControl('');
+  @ViewChild('input', { read: ViewContainerRef }) public input: ViewContainerRef | undefined;
 
-  private params: IFilterParams | undefined;
+  filterTypes: string[] = Object.values(FilterType);
+  filterType = new FormControl(FilterType.contains);
+  filter = new FormControl('');
+
   private subs: SubSink = new SubSink();
+  private params: IFilterParams | undefined;
 
-  private checkValuePassesFilter: ((val: string) => boolean) | undefined;
-  private valueAccessor: ((data: IDoesFilterPassParams) => string) | undefined;
   private currentModel: CustomFilterModel = { type: '', filter: '' };
-
-  @ViewChild('input', { read: ViewContainerRef }) public input: any;
+  private valueAccessor: ((date: IDoesFilterPassParams) => string) | undefined;
+  private checkValuePassesFilter: ((val: string) => boolean) | undefined;
 
   agInit(params: IFilterParams): void {
     this.params = params;
@@ -47,15 +47,15 @@ export class CustomFilterComponent implements IFilterAngularComp, OnDestroy {
     this.filterType.setValue(this.filterTypes[0]);
 
     const colId = params.colDef.field as string;
-    this.valueAccessor = (params: IDoesFilterPassParams) => params.data[colId];
+    this.valueAccessor = (params: IDoesFilterPassParams) => params.data[colId].toLowerCase();
   }
 
   afterGuiAttached?(params?: IAfterGuiAttachedParams): void {
-    window.setTimeout(() => this.input.element.nativeElement.focus());
+    window.setTimeout(() => this.input?.element.nativeElement.focus());
   }
 
   ngOnDestroy(): void {
-    this.subs.unsubscribe();
+      this.subs.unsubscribe();
   }
 
   isFilterActive(): boolean {
@@ -94,24 +94,25 @@ export class CustomFilterComponent implements IFilterAngularComp, OnDestroy {
       case FilterType.equals:
         return (value: string) => value === filterLowerCase;
       case FilterType.notEquals:
-        return (value: string) => value != filterLowerCase;
+        return (value: string) => value !== filterLowerCase;
       case FilterType.startsWith:
         return (value: string) => value.indexOf(filterLowerCase) === 0;
       case FilterType.endsWith:
         return (value: string) => {
           const idx = value.lastIndexOf(filterLowerCase);
           return idx >= 0 && idx === value.length - filterLowerCase.length;
-        };
+        }
 
       // ----- List Filters ----- //
       case FilterType.isContainedIn:
         return this.getListFilter(filter, true);
       case FilterType.isNotContainedIn:
         return this.getListFilter(filter, false);
-
+    
       // ----- Should Never Happen ----- //
       default:
-        console.warn('invalid filter type ' + filter);
+        console.warn('invalid filter type' + filter);
+        break;
     }
     return;
   }

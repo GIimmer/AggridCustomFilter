@@ -1,19 +1,20 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 
-import { CustomFilter } from './custom-filter.component';
+import { CustomFilterComponent } from './custom-filter.component';
 
 describe('CustomFilterComponent', () => {
-  let component: CustomFilter;
-  let fixture: ComponentFixture<CustomFilter>;
+  let component: CustomFilterComponent;
+  let fixture: ComponentFixture<CustomFilterComponent>;
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      declarations: [CustomFilter],
-    }).compileComponents();
+      declarations: [ CustomFilterComponent ]
+    })
+    .compileComponents();
   });
 
   beforeEach(() => {
-    fixture = TestBed.createComponent(CustomFilter);
+    fixture = TestBed.createComponent(CustomFilterComponent);
     component = fixture.componentInstance;
     fixture.detectChanges();
   });
